@@ -1,5 +1,5 @@
 use crate::pallet::{self as pallet_template, *};
-use frame_support::pallet_prelude::*;
+use frame_support::{pallet_prelude::*, parameter_types};
 use sp_core::ConstU64;
 use sp_runtime::BuildStorage;
 
@@ -39,14 +39,20 @@ impl frame_system::Config for Runtime {
 }
 
 impl pallet_template::Config for Runtime {
-	type MaxVoters = ConstU32<100>;
+	type MaxVoters = MyMaxVoters;
 	type RuntimeEvent = RuntimeEvent;
 }
 
 // Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {
-	frame_system::GenesisConfig::<Runtime>::default()
+	let mut ext: sp_io::TestExternalities = frame_system::GenesisConfig::<Runtime>::default()
 		.build_storage()
 		.unwrap()
-		.into()
+		.into();
+	ext.execute_with(|| System::set_block_number(1));
+	ext
+}
+
+parameter_types! {
+  pub static MyMaxVoters: u32 = 100;
 }
