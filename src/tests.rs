@@ -9,11 +9,12 @@ fn root() -> RuntimeOrigin {
 	RuntimeOrigin::root()
 }
 
+
 mod register_voter {
-	use sp_runtime::traits::BadOrigin;
+use sp_runtime::traits::BadOrigin;
 
 	use super::*;
-
+	
 	#[test]
 	fn works_only_if_root() {
 		new_test_ext().execute_with(|| {
@@ -59,6 +60,11 @@ mod make_vote {
 			assert_ok!(TemplateModule::register_voter(root(), 1));
 			assert_ok!(TemplateModule::make_vote(RuntimeOrigin::signed(1), Vote::Aye));
 			assert_ok!(TemplateModule::make_vote(RuntimeOrigin::signed(1), Vote::Nay));
+
+			let votes = Votes::<Runtime>::get();
+			assert_eq!(votes.len(), 1);
+			assert_eq!(votes[0].vote, Vote::Nay);
+			assert_eq!(votes[0].who, 1);
 		});
 	}
 }
@@ -101,7 +107,9 @@ mod close_vote {
 	}
 
 	#[test]
-	fn close_even_will_fail() {}
+	fn close_even_will_fail() {
+		
+	}
 
 	#[test]
 	fn close_with_abstinence() {
